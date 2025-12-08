@@ -6,76 +6,78 @@
 
 ## Phase 1: Project Setup
 
-- [ ] Create new project directory
-- [ ] Initialize with `bun init`
-- [ ] Install dependencies:
-  - [ ] `@mastra/core`
-  - [ ] `@mastra/mcp`
-  - [ ] `zod`
-  - [ ] `cheerio`
-- [ ] Configure TypeScript
-- [ ] Create Mastra directory structure:
-  - [ ] `src/mastra/tools/`
-  - [ ] `src/mastra/lib/`
-  - [ ] `src/mastra/index.ts`
+- [x] Create new project directory
+- [x] Initialize with `bun init`
+- [x] Install dependencies:
+  - [x] `@mastra/core`
+  - [x] `@mastra/mcp`
+  - [x] `zod`
+  - [x] `cheerio`
+  - [x] `turndown`
+- [x] Configure TypeScript
+- [x] Create Mastra directory structure:
+  - [x] `src/mastra/tools/`
+  - [x] `src/mastra/lib/`
+  - [x] `src/mastra/index.ts`
+- [x] Remove demo weather files (agent, workflow, tool, scorer)
 
 ## Phase 2: Library Implementation
 
 ### llms.txt Parser (src/mastra/lib/llms-txt.ts)
 
-- [ ] Create `fetchIndex()` function to get llms.txt
-- [ ] Create `parseIndex()` to parse llms.txt into structured data
-- [ ] Implement caching with TTL for index
+- [x] Create `fetchIndex()` function to get llms.txt
+- [x] Create `parseIndex()` to parse llms.txt into structured data
+- [x] Implement caching with TTL for index
 
 ### HTML Parsers (src/mastra/lib/parsers.ts)
 
-- [ ] Create `extractContent(html)` to get main content
-- [ ] Create `extractTitle(html)` helper
-- [ ] Create `parsePluginDoc(html)` for plugin pages
+- [x] Create `extractContent(html)` to get main content
+- [x] Create `extractTitle(html)` helper
+- [x] Create `parsePluginDoc(html)` for plugin pages (reused generic Turndown conversion)
 
 ### Caching (src/mastra/lib/cache.ts)
 
-- [ ] Implement in-memory cache with TTL
-- [ ] Create `getCached(key, ttl, fetcher)` helper
+- [x] Implement in-memory cache with TTL
+- [x] Create `getCached(key, ttl, fetcher)` helper
 
 ## Phase 3: Tool Implementation
 
 ### src/mastra/tools/list-sections.ts
 
-- [ ] Create `listSectionsTool` with createTool
-- [ ] Implement output schema (sections array)
-- [ ] Connect to llms-txt parser
+- [x] Create `listSectionsTool` with createTool
+- [x] Implement output schema (sections array)
+- [x] Connect to llms-txt parser
 
 ### src/mastra/tools/get-page.ts
 
-- [ ] Create `getPageTool` with createTool
-- [ ] Implement input schema (path)
-- [ ] Implement output schema (title, content, url)
-- [ ] Connect to HTML parser
+- [x] Create `getPageTool` with createTool
+- [x] Implement input schema (path)
+- [x] Implement output schema (title, content, url)
+- [x] Connect to HTML parser
 
 ### src/mastra/tools/search.ts
 
-- [ ] Create `searchTool` with createTool
-- [ ] Implement input schema (query)
-- [ ] Implement output schema (results array)
-- [ ] Implement keyword-based search over index
-- [ ] Add relevance scoring
+- [x] Create `searchTool` with createTool
+- [x] Implement input schema (query)
+- [x] Implement output schema (results array)
+- [x] Implement keyword-based search over index
+- [x] Add relevance scoring
 
 ### src/mastra/tools/get-plugin.ts
 
-- [ ] Create `getPluginTool` with createTool
-- [ ] Implement input schema (name)
-- [ ] Implement output schema (plugin documentation)
-- [ ] Connect to plugin parser
+- [x] Create `getPluginTool` with createTool
+- [x] Implement input schema (name)
+- [x] Implement output schema (plugin documentation)
+- [x] Connect to plugin parser
 
 ## Phase 4: Mastra App Setup
 
 ### src/mastra/index.ts
 
-- [ ] Import all tools
-- [ ] Create MCPServer instance with all 4 tools
-- [ ] Create Mastra instance with MCPServer
-- [ ] Export mastra instance
+- [x] Import all tools
+- [x] Create MCPServer instance with all 4 tools
+- [x] Create Mastra instance with MCPServer
+- [x] Export mastra instance
 
 ## Phase 5: Local Testing
 

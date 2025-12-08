@@ -2,6 +2,8 @@
 
 > A cloud-hosted MCP server providing AI assistants with comprehensive access to Tauri documentation, accessible via HTTP without local installation. Deployed on Mastra Cloud.
 
+**Status:** Code implemented for full Mastra MCP (tools only) and ready for local Mastra runs. Cloud deployment is pending. HTML → Markdown now uses Turndown for consistent output. Weather demo removed. Rust companion MCP remains deployed (see Rust docs MCP below).
+
 [Notes](./notes.md) | [TODOs](./todos.md)
 
 ---

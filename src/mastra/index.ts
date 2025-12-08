@@ -1,29 +1,22 @@
+import { Mastra } from "@mastra/core/mastra";
+import { MCPServer } from "@mastra/mcp";
+import { listSectionsTool } from "./tools/list-sections";
+import { getPageTool } from "./tools/get-page";
+import { searchTool } from "./tools/search";
+import { getPluginTool } from "./tools/get-plugin";
 
-import { Mastra } from '@mastra/core/mastra';
-import { PinoLogger } from '@mastra/loggers';
-import { LibSQLStore } from '@mastra/libsql';
-import { weatherWorkflow } from './workflows/weather-workflow';
-import { weatherAgent } from './agents/weather-agent';
-import { toolCallAppropriatenessScorer, completenessScorer, translationScorer } from './scorers/weather-scorer';
+const tauriDocsServer = new MCPServer({
+  id: "tauri-docs-mcp",
+  name: "tauri-docs-mcp",
+  version: "1.0.0",
+  tools: {
+    list_sections: listSectionsTool,
+    get_page: getPageTool,
+    search: searchTool,
+    get_plugin: getPluginTool,
+  },
+});
 
 export const mastra = new Mastra({
-  workflows: { weatherWorkflow },
-  agents: { weatherAgent },
-  scorers: { toolCallAppropriatenessScorer, completenessScorer, translationScorer },
-  storage: new LibSQLStore({
-    // stores observability, scores, ... into memory storage, if it needs to persist, change to file:../mastra.db
-    url: ":memory:",
-  }),
-  logger: new PinoLogger({
-    name: 'Mastra',
-    level: 'info',
-  }),
-  telemetry: {
-    // Telemetry is deprecated and will be removed in the Nov 4th release
-    enabled: false, 
-  },
-  observability: {
-    // Enables DefaultExporter and CloudExporter for AI tracing
-    default: { enabled: true }, 
-  },
+  mcpServers: { "tauri-docs": tauriDocsServer },
 });

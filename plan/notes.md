@@ -344,6 +344,8 @@ const turndown = new TurndownService();
 const markdown = turndown.turndown(html);
 ```
 
+**Chosen for this repo:** Turndown is used for HTML → Markdown conversion, paired with Cheerio to strip layout chrome.
+
 ### Option 3: Simple Regex (for structured docs)
 
 Since Tauri uses Starlight, content follows predictable patterns.
