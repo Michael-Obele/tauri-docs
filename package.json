@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@mastra/core": "^0.24.6",
+    "@mastra/libsql": "^0.16.3",
     "@mastra/mcp": "^0.14.4",
     "@types/node": "^24.10.1",
     "cheerio": "^1.1.2",
