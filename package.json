@@ -4,9 +4,12 @@
   "type": "module",
   "private": true,
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/bun": "latest",
     "@types/turndown": "^5.0.6",
-    "mastra": "^0.18.6"
+    "mastra": "^0.18.6",
+    "semantic-release": "^25.0.2"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
@@ -17,7 +20,8 @@
   "scripts": {
     "dev": "mastra dev",
     "build": "mastra build",
-    "start": "mastra start"
+    "start": "mastra start",
+    "release": "semantic-release"
   },
   "dependencies": {
     "@mastra/core": "^0.24.6",
@@ -25,6 +29,7 @@
     "@mastra/mcp": "^0.14.4",
     "@types/node": "^24.10.1",
     "cheerio": "^1.1.2",
+    "fast-fuzzy": "^1.12.0",
     "turndown": "^7.2.2",
     "zod": "^4.1.13"
   }
