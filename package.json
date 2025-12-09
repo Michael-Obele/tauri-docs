@@ -1,5 +1,6 @@
 {
   "name": "tauri-docs",
+  "version": "0.0.0-development",
   "module": "index.ts",
   "type": "module",
   "private": true,
