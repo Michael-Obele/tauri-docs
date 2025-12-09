@@ -1,9 +1,8 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
-import { fetchPageMarkdown } from "../lib/html";
-import { getCached } from "../lib/cache";
-
-const PAGE_TTL_MS = 30 * 60 * 1000; // 30 minutes
+import { fetchPageHtml } from "../lib/html";
+import { pageCache } from "../lib/cache-manager";
+import type { PluginContent } from "../lib/types";
 
 export const getPluginTool = createTool({
   id: "get_plugin",
@@ -16,17 +15,31 @@ export const getPluginTool = createTool({
   }),
   outputSchema: z.object({
     title: z.string(),
-    content: z.string(),
+    content: z.string().describe("HTML content of the plugin documentation"),
     url: z.string(),
   }),
   execute: async ({ context }) => {
     const path = `plugin/${context.name.replace(/^\//, "")}`;
     const url = `https://v2.tauri.app/${path}`;
 
-    const page = await getCached(`plugin:${url}`, PAGE_TTL_MS, () =>
-      fetchPageMarkdown(url)
-    );
+    // Try cache first
+    const cacheKey = `plugin:${url}`;
+    const cached = pageCache.get<PluginContent>(cacheKey);
+    if (cached) {
+      return cached;
+    }
 
-    return { title: page.title, content: page.markdown, url: page.url };
+    // Fetch fresh data
+    const page = await fetchPageHtml(url);
+    const result: PluginContent = {
+      title: page.title,
+      content: page.html,
+      url: page.url,
+    };
+
+    // Cache result
+    pageCache.set(cacheKey, result);
+
+    return result;
   },
 });

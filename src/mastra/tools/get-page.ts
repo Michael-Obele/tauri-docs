@@ -1,14 +1,13 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
-import { fetchPageMarkdown } from "../lib/html";
-import { getCached } from "../lib/cache";
-
-const PAGE_TTL_MS = 30 * 60 * 1000; // 30 minutes
+import { fetchPageHtml } from "../lib/html";
+import { pageCache } from "../lib/cache-manager";
+import type { PageContent } from "../lib/types";
 
 export const getPageTool = createTool({
   id: "get_page",
   description:
-    "Fetch a specific Tauri documentation page by path and return markdown",
+    "Fetch a specific Tauri documentation page by path and return HTML content",
   inputSchema: z.object({
     path: z
       .string()
@@ -16,7 +15,7 @@ export const getPageTool = createTool({
   }),
   outputSchema: z.object({
     title: z.string(),
-    content: z.string(),
+    content: z.string().describe("HTML content of the documentation page"),
     url: z.string(),
   }),
   execute: async ({ context }) => {
@@ -25,10 +24,24 @@ export const getPageTool = createTool({
       ? path
       : `https://v2.tauri.app/${path.replace(/^\//, "")}`;
 
-    const page = await getCached(`page:${url}`, PAGE_TTL_MS, () =>
-      fetchPageMarkdown(url)
-    );
+    // Try cache first
+    const cacheKey = `page:${url}`;
+    const cached = pageCache.get<PageContent>(cacheKey);
+    if (cached) {
+      return cached;
+    }
 
-    return { title: page.title, content: page.markdown, url: page.url };
+    // Fetch fresh data
+    const page = await fetchPageHtml(url);
+    const result: PageContent = {
+      title: page.title,
+      content: page.html,
+      url: page.url,
+    };
+
+    // Cache result
+    pageCache.set(cacheKey, result);
+
+    return result;
   },
 });

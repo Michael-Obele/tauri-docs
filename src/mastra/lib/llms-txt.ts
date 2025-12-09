@@ -1,39 +1,40 @@
-import { getCached } from './cache';
-
-export type DocsSection = {
-  category: string;
-  pages: { title: string; path: string; description?: string }[];
+export type DocSection = {
+  title: string;
+  path: string;
+  url: string;
 };
 
-const INDEX_URL = 'https://tauri.app/llms.txt';
-const INDEX_TTL_MS = 60 * 60 * 1000; // 1 hour
+export type DocsIndex = {
+  sections: DocSection[];
+  raw: string;
+};
 
-export async function fetchDocsIndex(): Promise<string> {
-  return getCached('llms.txt', INDEX_TTL_MS, async () => {
-    const res = await fetch(INDEX_URL);
-    if (!res.ok) throw new Error(`Failed to fetch llms.txt: ${res.status}`);
-    return res.text();
-  });
+const INDEX_URL = "https://tauri.app/llms.txt";
+
+export async function fetchLlmsTxt(): Promise<DocsIndex> {
+  const res = await fetch(INDEX_URL);
+  if (!res.ok) throw new Error(`Failed to fetch llms.txt: ${res.status}`);
+  const raw = await res.text();
+
+  const sections = parseLlmsTxt(raw);
+
+  return { sections, raw };
 }
 
-export function parseDocsIndex(raw: string): DocsSection[] {
+export function parseLlmsTxt(raw: string): DocSection[] {
   const lines = raw.split(/\r?\n/);
-  const sections: DocsSection[] = [];
-  let current: DocsSection | null = null;
+  const sections: DocSection[] = [];
 
   for (const line of lines) {
-    const heading = line.match(/^##\s+(.*)/);
-    if (heading) {
-      current = { category: heading[1].trim(), pages: [] };
-      sections.push(current);
-      continue;
-    }
-
     const pageMatch = line.match(/^-\s*\[(.+?)\]\((https?:\/\/[^)]+)\)/);
-    if (pageMatch && current) {
+    if (pageMatch) {
       const [, title, url] = pageMatch;
-      const path = url.replace('https://v2.tauri.app/', '').replace(/\/$/, '');
-      current.pages.push({ title: title.trim(), path });
+      const path = url.replace("https://v2.tauri.app/", "").replace(/\/$/, "");
+      sections.push({
+        title: title.trim(),
+        path,
+        url: url.trim(),
+      });
     }
   }
 
