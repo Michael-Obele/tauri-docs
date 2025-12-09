@@ -5,11 +5,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'CHANGELOG.md'
 
 jobs:
-  changelog:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,16 +17,28 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check commit message
+        id: check-commit
+        run: |
+          if git log --oneline -1 | grep -qE '\[(patch|minor|major)\]'; then
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_release=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Setup Node.js
+        if: steps.check-commit.outputs.should_release == 'true' || github.event_name == 'workflow_dispatch'
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
 
       - name: Install dependencies
+        if: steps.check-commit.outputs.should_release == 'true' || github.event_name == 'workflow_dispatch'
         run: npm ci
 
-      - name: Generate changelog
+      - name: Generate changelog and release
+        if: steps.check-commit.outputs.should_release == 'true' || github.event_name == 'workflow_dispatch'
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

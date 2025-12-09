@@ -2,6 +2,41 @@
 
 Mastra MCP server providing access to Tauri documentation from tauri.app.
 
+## 📦 Versioning & Releases
+
+This project uses [semantic-release](https://github.com/semantic-release/semantic-release) for automated versioning and changelog generation based on conventional commits.
+
+### Commit Message Format
+
+Use conventional commit format for automatic versioning:
+
+- `feat:` - Minor version bump (new features)
+- `fix:` - Patch version bump (bug fixes)
+- `BREAKING CHANGE:` - Major version bump (breaking changes)
+- `docs:`, `chore:`, `refactor:`, `test:`, `ci:` - No version bump
+
+### Release Triggers
+
+Releases are automatically triggered on pushes to `main` branch when commit messages contain version keywords:
+
+- `[patch]` - Forces patch release
+- `[minor]` - Forces minor release
+- `[major]` - Forces major release
+
+Alternatively, trigger manually via GitHub Actions → "Release Changelog" → "Run workflow".
+
+### What Happens on Release
+
+1. Analyzes commits since last release
+2. Determines version bump based on conventional commits
+3. Generates/updates `CHANGELOG.md`
+4. Creates git tag (e.g., `v1.0.0`)
+5. Commits changes back to repository
+
+### Viewing Changes
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed release notes and history.
+
 ## Production Deployments
 
 Choose the base host that fits your workflow — both expose the same toolset, but their runtime characteristics differ:
@@ -23,14 +58,19 @@ This repository contains a Mastra-based MCP server that provides access to Tauri
 
 ## 🎉 What's New
 
-- ✅ MCP server code complete; Mastra Cloud deployment complete
+- ✅ MCP server deployed on Mastra Cloud
 - ✅ Four main MCP tools for documentation discovery, page retrieval, and search
-- ✅ Intelligent caching for improved performance
+- ✅ Advanced LRU caching with automatic eviction and size limits
+- ✅ Request metrics and health monitoring
+- ✅ TypeScript type safety with Zod schemas
+- ✅ Resources API for static documentation metadata
+- ✅ Guided prompts for common Tauri workflows
 - ✅ Support for all major AI code editors (Cursor, Windsurf, VS Code, Zed, Claude Code, Codex)
 - ✅ HTTP and SSE transport protocols
 - ✅ Real-time web scraping from tauri.app
 
-## Editor Setup
+<details>
+<summary>Editor Setup</summary>
 
 Mastra Cloud is the recommended deployment for reliability and responsiveness.
 
@@ -121,7 +161,9 @@ Mastra Cloud — HTTP example:
 
 VS Code users can open the Command Palette (`Cmd/Ctrl+Shift+P`) and run `MCP: Add server` to paste either URL.
 
-## CLI & Agent Configuration
+</details>
+
+<details><summary>CLI & Agent Configuration</summary>
 
 The same base URLs work across CLIs. Mastra Cloud is the recommended primary deployment for the fastest responses with zero cold start.
 
@@ -225,6 +267,8 @@ nano ~/.gemini/settings.json
 
 4. Mastra Cloud is recommended for zero cold start and maximum responsiveness. Restart the CLI to apply changes.
 
+</details>
+
 ## Verification & Quick Tests
 
 - `claude mcp list`
@@ -239,22 +283,47 @@ Claude Code may prompt for tool permissions — use `/permissions` or set `allow
 
 Once installed, your AI assistant will have access to these tools (IDs exactly as exposed by the MCP server):
 
+### Core Tools
+
 1. `list_sections` — Parse `https://tauri.app/llms.txt` to list doc sections
-2. `get_page` — Fetch a Tauri doc page and return cleaned Markdown (HTML → Markdown via Turndown + Cheerio)
+2. `get_page` — Fetch a Tauri doc page and return cleaned HTML content
 3. `search` — Keyword search across the llms.txt index
 4. `get_plugin` — Fetch plugin doc pages by name
 
+### Resources (NEW)
+
+Static, auto-updating resources available via the MCP Resources API:
+
+1. `tauri://docs/structure` — Complete documentation structure from llms.txt
+2. `tauri://platforms` — Supported platforms (Windows, macOS, Linux, iOS, Android)
+3. `tauri://metrics` — Real-time server metrics (requests, cache, health)
+
+### Prompts (NEW)
+
+Guided workflows for common tasks:
+
+1. `getting-started` — Step-by-step guide to create your first Tauri app
+2. `troubleshooting` — Common issues and debugging workflows
+3. `plugin-setup` — Guide to installing and configuring plugins
+4. `migration-v1-to-v2` — Guide for migrating from Tauri v1 to v2
+
 ### Tool response formats (quick reference)
 
-- `list_sections`: List of documentation sections from llms.txt
-- `get_page`: Markdown documentation for a specific page
-- `search`: List of matching sections or pages based on keywords
-- `get_plugin`: Markdown documentation for a specific plugin
+- `list_sections`: List of documentation sections from llms.txt with total count
+- `get_page`: Cleaned HTML documentation for a specific page
+- `search`: List of matching sections with relevance scores and total count
 
-## Example Usage
+### Contents
 
-After installing the MCP server in your editor, you can ask your AI assistant:
-
+- `src/` - Mastra bootstrap, MCP servers, tools, and agents
+- `src/mastra/tools/` - Tools for accessing Tauri documentation
+- `src/mastra/lib/` - Caching, parsing, metrics, and utility functions
+  - `types.ts` - TypeScript types and Zod schemas
+  - `cache-manager.ts` - LRU cache with automatic eviction
+  - `metrics.ts` - Request tracking and health monitoring
+  - `llms-txt.ts` - Documentation index parsing
+  - `html.ts` - HTML fetching and cleaning
+- `scripts/` - Version management and automation scripts (if any)
 - "Show me the Tauri plugin documentation"
 - "Get the overview of Tauri APIs"
 - "List all sections in Tauri docs"
@@ -320,43 +389,37 @@ The server is deployed at `https://tauri-docs.mastra.cloud` and exposes tools vi
 
 ## Project Architecture
 
-### Core Components
-
-- Mastra Framework: Orchestrates agents, workflows, and MCP servers
-- MCP Server: Exposes tools to AI code editors via HTTP/SSE protocols
-- Web Scraping Services: Fetches documentation from tauri.app
-- Intelligent Caching: Reduces API calls while ensuring freshness
-- Documentation Parsing: Extracts structured information from HTML documentation
-
 ### Key Features
 
-- Real-time Documentation: Always fetches latest content from tauri.app
-- Comprehensive Coverage: Access to guides, APIs, plugins, and references
-- Intelligent Caching: Reduces API calls while ensuring freshness
-- Search Functionality: Find documentation by keywords
-- Markdown Output: Returns parsed documentation as clean Markdown
+- **Real-time Documentation**: Always fetches latest content from tauri.app
+- **Comprehensive Coverage**: Access to guides, APIs, plugins, and references
+- **Advanced Caching**: LRU cache with automatic eviction and size limits (10MB index, 50MB pages)
+- **Metrics & Monitoring**: Request tracking, cache statistics, and health checks
+- **Type Safety**: Full TypeScript support with Zod validation
+- **Resources API**: Static documentation metadata (structure, platforms, plugins, metrics)
+- **Guided Prompts**: Step-by-step workflows for common tasks
+- **Search Functionality**: Find documentation by keywords with relevance scoring
+- **Clean HTML Output**: Returns parsed documentation with navigation/scripts removed
 
 ## Conventions & notes
 
-- Tools are implemented under `src/mastra/tools` and should use `zod` for input validation
+- Tools use `zod` for input validation and follow Mastra patterns with `createTool`
 - Web scraping uses cheerio and turndown for HTML to markdown conversion
-- Intelligent caching is used to improve performance and reduce API calls
-- Tools follow Mastra patterns using `createTool` with proper input/output schemas
+- Intelligent caching reduces API calls while ensuring freshness
 
 ## Development tips
 
-- Node >= 22.13.0 is recommended (see `package.json` engines)
-- When adding tools, follow the patterns in existing tools
-- After making changes, run the 10–15s smoke-test via `npm run dev` to surface runtime integration issues early
-- The system uses intelligent caching - clear cache if you need fresh data during development
+- Node >= 22.13.0 required (see `package.json` engines)
+- Run `npm run dev` for smoke tests after changes
+- Clear cache during development if fresh data needed
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. (If applicable)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
-We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before getting started. (If applicable)
+We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before getting started.
 
 ## Contact
 
