@@ -2,44 +2,7 @@
 
 Mastra MCP server providing access to Tauri documentation from tauri.app.
 
-## 📦 Versioning & Releases
-
-This project uses [semantic-release](https://github.com/semantic-release/semantic-release) for automated versioning and changelog generation based on conventional commits.
-
-### Commit Message Format
-
-Use conventional commit format for automatic versioning:
-
-- `feat:` - Minor version bump (new features)
-- `fix:` - Patch version bump (bug fixes)
-- `BREAKING CHANGE:` - Major version bump (breaking changes)
-- `docs:`, `chore:`, `refactor:`, `test:`, `ci:` - No version bump
-
-### Release Triggers
-
-Releases are automatically triggered on pushes to `main` branch when commit messages contain version keywords:
-
-- `[patch]` - Forces patch release
-- `[minor]` - Forces minor release
-- `[major]` - Forces major release
-
-Alternatively, trigger manually via GitHub Actions → "Release Changelog" → "Run workflow".
-
-### What Happens on Release
-
-1. Analyzes commits since last release
-2. Determines version bump based on conventional commits
-3. Generates/updates `CHANGELOG.md`
-4. Creates git tag (e.g., `v1.0.0`)
-5. Commits changes back to repository
-
-### Viewing Changes
-
-See [CHANGELOG.md](CHANGELOG.md) for detailed release notes and history.
-
 ## Production Deployments
-
-Choose the base host that fits your workflow — both expose the same toolset, but their runtime characteristics differ:
 
 | Deployment   | URL                             | Description                                                                                      |
 | ------------ | ------------------------------- | ------------------------------------------------------------------------------------------------ |
@@ -49,14 +12,9 @@ Choose the base host that fits your workflow — both expose the same toolset, b
 - Append `/api/mcp/tauri-docs/mcp` for the HTTP transport (handy for CLIs and quick one-off calls).
 - Mastra Cloud is the recommended primary deployment - it offers zero cold start and maximum responsiveness.
 
-Endpoint reference & alternates
-
-- Mastra Cloud SSE: [https://tauri-docs.mastra.cloud/api/mcp/tauri-docs/sse](https://tauri-docs.mastra.cloud/api/mcp/tauri-docs/sse)
-- Mastra Cloud HTTP: [https://tauri-docs.mastra.cloud/api/mcp/tauri-docs/mcp](https://tauri-docs.mastra.cloud/api/mcp/tauri-docs/mcp)
-
 This repository contains a Mastra-based MCP server that provides access to Tauri documentation from tauri.app. Use it in your AI-powered code editor to get instant access to the latest Tauri documentation directly from the official Tauri documentation site.
 
-## 🎉 What's New
+## 🎉 Features
 
 - ✅ MCP server deployed on Mastra Cloud
 - ✅ Four main MCP tools for documentation discovery, page retrieval, and search
@@ -69,15 +27,14 @@ This repository contains a Mastra-based MCP server that provides access to Tauri
 - ✅ HTTP and SSE transport protocols
 - ✅ Real-time web scraping from tauri.app
 
-<details>
-<summary>Editor Setup</summary>
+## Editor Setup
 
 Mastra Cloud is the recommended deployment for reliability and responsiveness.
 
 ### Windsurf
 
 1. Edit `~/.codeium/windsurf/mcp_config.json`.
-2. Mastra Cloud is recommended for zero cold start and maximum responsiveness. Add the SSE transport as shown:
+2. Add the SSE transport:
 
 ```json
 {
@@ -91,19 +48,6 @@ Mastra Cloud is the recommended deployment for reliability and responsiveness.
 ```
 
 3. Save, restart Windsurf, then open `mcp.json` in Agent mode and click "start".
-
-Use the HTTP variant if you need it:
-
-```json
-{
-  "servers": {
-    "tauri-docs": {
-      "type": "http",
-      "url": "https://tauri-docs.mastra.cloud/api/mcp/tauri-docs/mcp"
-    }
-  }
-}
-```
 
 ### Zed
 
@@ -127,13 +71,12 @@ Use the HTTP variant if you need it:
 }
 ```
 
-3. Save, restart Zed, and confirm the server shows a green indicator in the Agent panel. Zed also offers a UI flow via Settings → Agent to paste either endpoint without editing JSON.
+3. Save, restart Zed, and confirm the server shows a green indicator in the Agent panel.
 
 ### Cursor
 
 1. Open Cursor Settings (`Cmd/Ctrl` + `,`).
 2. Navigate to "MCP" / "Model Context Protocol" and add a new server configuration.
-3. Mastra Cloud is recommended for zero cold start and maximum responsiveness. Append the SSE or HTTP path as shown in the examples below.
 
 Mastra Cloud — SSE example:
 
@@ -161,9 +104,7 @@ Mastra Cloud — HTTP example:
 
 VS Code users can open the Command Palette (`Cmd/Ctrl+Shift+P`) and run `MCP: Add server` to paste either URL.
 
-</details>
-
-<details><summary>CLI & Agent Configuration</summary>
+## CLI & Agent Configuration
 
 The same base URLs work across CLIs. Mastra Cloud is the recommended primary deployment for the fastest responses with zero cold start.
 
@@ -217,11 +158,9 @@ Enable project servers with:
 claude mcp add tauri-docs --url https://tauri-docs.mastra.cloud/api/mcp/tauri-docs/mcp
 ```
 
-- Use `/permissions` inside Claude Code to grant tool access if prompted.
-
 ### OpenAI Codex CLI
 
-Register the Mastra Cloud endpoint for codex or use your own privately hosted MCP endpoint.
+Register the Mastra Cloud endpoint for codex:
 
 ```bash
 codex mcp add tauri-docs --url https://tauri-docs.mastra.cloud/api/mcp/tauri-docs/sse
@@ -237,7 +176,7 @@ mkdir -p ~/.gemini
 nano ~/.gemini/settings.json
 ```
 
-2. Add a configuration. Mastra Cloud example:
+2. Add a configuration:
 
 ```json
 {
@@ -264,10 +203,6 @@ nano ~/.gemini/settings.json
   }
 }
 ```
-
-4. Mastra Cloud is recommended for zero cold start and maximum responsiveness. Restart the CLI to apply changes.
-
-</details>
 
 ## Verification & Quick Tests
 
@@ -313,17 +248,10 @@ Guided workflows for common tasks:
 - `get_page`: Cleaned HTML documentation for a specific page
 - `search`: List of matching sections with relevance scores and total count
 
-### Contents
+### Example Usage
 
-- `src/` - Mastra bootstrap, MCP servers, tools, and agents
-- `src/mastra/tools/` - Tools for accessing Tauri documentation
-- `src/mastra/lib/` - Caching, parsing, metrics, and utility functions
-  - `types.ts` - TypeScript types and Zod schemas
-  - `cache-manager.ts` - LRU cache with automatic eviction
-  - `metrics.ts` - Request tracking and health monitoring
-  - `llms-txt.ts` - Documentation index parsing
-  - `html.ts` - HTML fetching and cleaning
-- `scripts/` - Version management and automation scripts (if any)
+After installing the MCP server in your editor, you can ask your AI assistant:
+
 - "Show me the Tauri plugin documentation"
 - "Get the overview of Tauri APIs"
 - "List all sections in Tauri docs"
@@ -337,13 +265,6 @@ Guided workflows for common tasks:
 ## Local Development
 
 Want to run the MCP server locally or contribute to the project?
-
-### Contents
-
-- `src/` - Mastra bootstrap, MCP servers, tools, and agents
-- `src/mastra/tools/` - Tools for accessing Tauri documentation
-- `src/mastra/lib/` - Caching, parsing, and utility functions
-- `scripts/` - Version management and automation scripts (if any)
 
 ### Quick start (development smoke-test)
 
@@ -366,52 +287,6 @@ pnpm install
 # Starts Mastra in dev mode; this repo's smoke-test expects a short run to detect runtime errors
 npm run dev
 ```
-
-## Useful scripts
-
-- `npm run dev` – Start Mastra in development mode (recommended smoke-test).
-- `npm run build` – Build the Mastra project for production.
-- `npm run start` – Start the built Mastra server.
-- `npm run check-versions` – Check if package.json and mcp-server.ts versions match (fails if mismatched). (If applicable)
-- `npm run sync-versions-auto` – Check versions and auto-sync if mismatched (package.json is source of truth). (If applicable)
-- `npm run sync-versions` – Sync versions from latest git tag to both files. (If applicable)
-
-## MCP Architecture
-
-This project exposes a production-ready MCP Server that makes Tauri documentation available to AI code editors.
-
-What this means:
-
-- MCP Server (`src/mastra/index.ts`) - Exposes four Tauri documentation tools to external MCP clients (Cursor, Windsurf, VS Code, etc.)
-- No MCP Client needed - This project only provides tools, it doesn't consume tools from other servers
-
-The server is deployed at `https://tauri-docs.mastra.cloud` and exposes tools via HTTP and SSE transports.
-
-## Project Architecture
-
-### Key Features
-
-- **Real-time Documentation**: Always fetches latest content from tauri.app
-- **Comprehensive Coverage**: Access to guides, APIs, plugins, and references
-- **Advanced Caching**: LRU cache with automatic eviction and size limits (10MB index, 50MB pages)
-- **Metrics & Monitoring**: Request tracking, cache statistics, and health checks
-- **Type Safety**: Full TypeScript support with Zod validation
-- **Resources API**: Static documentation metadata (structure, platforms, plugins, metrics)
-- **Guided Prompts**: Step-by-step workflows for common tasks
-- **Search Functionality**: Find documentation by keywords with relevance scoring
-- **Clean HTML Output**: Returns parsed documentation with navigation/scripts removed
-
-## Conventions & notes
-
-- Tools use `zod` for input validation and follow Mastra patterns with `createTool`
-- Web scraping uses cheerio and turndown for HTML to markdown conversion
-- Intelligent caching reduces API calls while ensuring freshness
-
-## Development tips
-
-- Node >= 22.13.0 required (see `package.json` engines)
-- Run `npm run dev` for smoke tests after changes
-- Clear cache during development if fresh data needed
 
 ## License
 
